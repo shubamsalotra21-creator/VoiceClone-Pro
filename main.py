@@ -9,6 +9,7 @@ import tempfile
 from core.voice_cloner import VoiceCloner
 from core.emotion_controller import EmotionController
 from core.audio_processor import AudioProcessor
+from core.voice_profile_manager import VoiceProfileManager
 from utils.audio_utils import save_audio, load_audio, play_audio
 from utils.config import load_config
 
@@ -26,10 +27,14 @@ def initialize_session_state():
         st.session_state.emotion_controller = None
     if 'audio_processor' not in st.session_state:
         st.session_state.audio_processor = None
+    if 'voice_profile_manager' not in st.session_state:
+        st.session_state.voice_profile_manager = VoiceProfileManager()
     if 'cloned_voice' not in st.session_state:
         st.session_state.cloned_voice = None
     if 'generated_audio' not in st.session_state:
         st.session_state.generated_audio = []
+    if 'selected_profile' not in st.session_state:
+        st.session_state.selected_profile = None
 
 def load_models():
     with st.spinner("🔄 Loading AI models..."):
@@ -49,11 +54,63 @@ def main():
     with st.sidebar:
         st.header("⚙️ Configuration")
         
+        # Voice Profile Selection
+        st.subheader("🎭 Voice Profile")
+        available_profiles = st.session_state.voice_profile_manager.list_profiles()
+        
+        if available_profiles:
+            profile_options = ["None (Custom)"] + available_profiles
+            selected_profile_name = st.selectbox(
+                "Select Voice Profile",
+                profile_options,
+                help="Choose a pre-configured voice profile"
+            )
+            
+            if selected_profile_name != "None (Custom)":
+                st.session_state.selected_profile = selected_profile_name
+                profile_data = st.session_state.voice_profile_manager.load_profile(selected_profile_name)
+                
+                # Display profile information
+                with st.expander("📋 Profile Details"):
+                    voice_info = profile_data.get("voice_profile", {})
+                    st.write(f"**Character:** {voice_info.get('character_name', 'N/A')}")
+                    st.write(f"**Gender:** {voice_info.get('gender', 'N/A')}")
+                    st.write(f"**Accent:** {voice_info.get('accent', 'N/A')}")
+                    st.write(f"**Archetype:** {voice_info.get('archetype', 'N/A')}")
+                    
+                    # Show masterpiece script if available
+                    script = st.session_state.voice_profile_manager.get_masterpiece_script(selected_profile_name)
+                    if script:
+                        st.write("**Sample Script:**")
+                        st.info(script.get('hindi', ''))
+                        st.write(f"*Directive:* {script.get('performance_directive', '')}")
+            else:
+                st.session_state.selected_profile = None
+        else:
+            st.info("No voice profiles found. Using custom settings.")
+            st.session_state.selected_profile = None
+        
+        st.divider()
+        
         model_choice = st.selectbox(
             "Voice Model",
             ["Tacotron2 + WaveGlow", "FastSpeech2 + HiFiGAN", "VITS"],
             help="Select the voice synthesis model"
         )
+        
+        # Get default values from profile if selected
+        if st.session_state.selected_profile:
+            perf_attrs = st.session_state.voice_profile_manager.get_performance_attributes(st.session_state.selected_profile)
+            # Map pacing to speed
+            pacing = perf_attrs.get("pacing", "")
+            if "slow" in pacing.lower():
+                default_speed = 0.8
+            elif "fast" in pacing.lower():
+                default_speed = 1.2
+            else:
+                default_speed = 1.0
+        else:
+            default_speed = 1.0
         
         emotion_options = {
             "Neutral": "neutral",
@@ -67,7 +124,7 @@ def main():
         
         emotion_strength = st.slider("Emotion Strength", 0.1, 1.0, 0.7, 0.1)
         
-        speed_factor = st.slider("Speech Speed", 0.5, 2.0, 1.0, 0.1)
+        speed_factor = st.slider("Speech Speed", 0.5, 2.0, default_speed, 0.1)
         
         pitch_shift = st.slider("Pitch Adjustment", -5.0, 5.0, 0.0, 0.5)
         
@@ -128,9 +185,20 @@ def main():
         if 'cloned_voice' not in st.session_state or st.session_state.cloned_voice is None:
             st.warning("Please clone a voice first using Record or Upload tabs")
         else:
+            # Use profile script if available
+            default_text = "Hello! This is your cloned voice speaking with advanced emotion control."
+            if st.session_state.selected_profile:
+                script = st.session_state.voice_profile_manager.get_masterpiece_script(
+                    st.session_state.selected_profile
+                )
+                if script and 'hindi' in script:
+                    default_text = script['hindi']
+                    if 'performance_directive' in script:
+                        st.info(f"📝 Performance Directive: {script['performance_directive']}")
+            
             text_input = st.text_area(
                 "Enter text to synthesize",
-                "Hello! This is your cloned voice speaking with advanced emotion control.",
+                default_text,
                 height=100
             )
             
@@ -210,10 +278,31 @@ def generate_speech(text, emotion, emotion_strength, speed, pitch, denoise, norm
     status_text = st.empty()
     
     try:
-        status_text.text("🔄 Generating speech...")
+        # Get voice profile parameters if a profile is selected
+        stability = 0.5
+        clarity_similarity = 0.75
+        style_exaggeration = 0.0
+        post_processing_config = {}
+        
+        if st.session_state.selected_profile:
+            synthesis_config = st.session_state.voice_profile_manager.get_synthesis_config(
+                st.session_state.selected_profile
+            )
+            stability = synthesis_config.get("stability", 0.5)
+            clarity_similarity = synthesis_config.get("clarity_similarity", 0.75)
+            style_exaggeration = synthesis_config.get("style_exaggeration", 0.0)
+            
+            post_processing_config = st.session_state.voice_profile_manager.get_post_processing_config(
+                st.session_state.selected_profile
+            )
+        
+        status_text.text("🔄 Generating speech with profile parameters...")
         raw_audio = st.session_state.voice_cloner.synthesize_speech(
             text, 
-            st.session_state.cloned_voice
+            st.session_state.cloned_voice,
+            stability=stability,
+            clarity_similarity=clarity_similarity,
+            style_exaggeration=style_exaggeration
         )
         progress_bar.progress(30)
         
@@ -223,7 +312,7 @@ def generate_speech(text, emotion, emotion_strength, speed, pitch, denoise, norm
             emotion, 
             emotion_strength
         )
-        progress_bar.progress(60)
+        progress_bar.progress(50)
         
         status_text.text("⚙️ Processing audio...")
         processed_audio = emotional_audio
@@ -235,10 +324,20 @@ def generate_speech(text, emotion, emotion_strength, speed, pitch, denoise, norm
             processed_audio = st.session_state.audio_processor.shift_pitch(processed_audio, pitch)
         
         if denoise:
-            processed_audio = st.session_state.audio_processor.denoise(processed_audio)
+            processed_audio = st.session_state.audio_processor.denoise(processed_audio, st.session_state.audio_processor.target_sr)
         
         if normalize:
             processed_audio = st.session_state.audio_processor.normalize_volume(processed_audio)
+        
+        progress_bar.progress(70)
+        
+        # Apply profile-specific post-processing if available
+        if post_processing_config:
+            status_text.text("🎚️ Applying profile post-processing (EQ, Compression, Reverb)...")
+            processed_audio = st.session_state.audio_processor.apply_profile_post_processing(
+                processed_audio,
+                post_processing_config
+            )
         
         progress_bar.progress(90)
         
