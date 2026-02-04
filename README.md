@@ -71,7 +71,9 @@
 <h2>Features</h2>
 <ul>
   <li><strong>Few-Shot Voice Cloning:</strong> High-quality voice replication from as little as 30 seconds of reference audio with speaker identity preservation</li>
+  <li><strong>Voice Profiles System:</strong> Pre-configured voice profiles with character-specific vocal characteristics, performance attributes, and post-processing effects (including "The Delhi Emperor" profile with authentic Hindi delivery)</li>
   <li><strong>Emotional Speech Synthesis:</strong> Fine-grained control over six emotional states (neutral, happy, sad, angry, excited, calm) with adjustable intensity</li>
+  <li><strong>Advanced Post-Processing:</strong> Professional-grade EQ boost, dynamic range compression, and reverb effects for cinematic audio quality</li>
   <li><strong>Real-Time Processing:</strong> Low-latency speech synthesis suitable for interactive applications and real-time communication</li>
   <li><strong>Multi-Model Synthesis Backend:</strong> Support for Tacotron2+WaveGlow, FastSpeech2+HiFiGAN, and VITS architectures with automatic quality optimization</li>
   <li><strong>Professional Audio Enhancement:</strong> Integrated noise reduction, volume normalization, and audio quality enhancement pipelines</li>
@@ -254,6 +256,35 @@ python voice_pipeline.py --config configs/production_pipeline.yaml --schedule "0
   <li><code>cache_models</code>: Keep models in memory between requests (default: True)</li>
 </ul>
 
+<h2>Voice Profiles</h2>
+<p>VoiceClone Pro supports pre-configured <strong>Voice Profiles</strong> that combine character-specific vocal characteristics, performance attributes, and professional post-processing effects.</p>
+
+<p><strong>Available Profiles:</strong></p>
+<ul>
+  <li><strong>The Delhi Emperor:</strong> Commanding voice with extreme bass resonance (85Hz-110Hz), authentic Delhi accent, cinematic pacing, and professional post-processing (EQ boost, 4:1 compression, plate reverb)</li>
+</ul>
+
+<p><strong>Profile Features:</strong></p>
+<ul>
+  <li>Character-specific vocal texture and archetype definitions</li>
+  <li>Performance attributes (pacing, pauses, breathing, emotional range)</li>
+  <li>Technical synthesis parameters (stability: 0.45, clarity: 0.90, style: 0.15)</li>
+  <li>Post-processing chain (60Hz-150Hz EQ boost, dynamic compression, reverb)</li>
+  <li>Masterpiece script segments with performance directives</li>
+  <li>Multi-language support (Hindi, English, and more)</li>
+</ul>
+
+<p><strong>Using Voice Profiles:</strong></p>
+<ol>
+  <li>Select a profile from the sidebar dropdown in the web interface</li>
+  <li>View profile details and sample scripts in the expandable section</li>
+  <li>Clone a voice using reference audio (Record or Upload tabs)</li>
+  <li>Generate speech with profile parameters automatically applied</li>
+  <li>Fine-tune using manual controls if desired</li>
+</ol>
+
+<p>For detailed information on creating custom profiles and technical implementation, see <code>voice_profiles/README.md</code>.</p>
+
 <h2>Folder Structure</h2>
 <pre><code>VoiceClone-Pro/
 ├── main.py                      # Primary Streamlit application interface
@@ -261,11 +292,16 @@ python voice_pipeline.py --config configs/production_pipeline.yaml --schedule "0
 │   ├── voice_cloner.py          # Multi-model voice cloning implementation
 │   ├── emotion_controller.py    # Emotional prosody modeling and control
 │   ├── audio_processor.py       # Professional audio processing pipeline
+│   ├── voice_profile_manager.py # Voice profile configuration management
 │   └── model_manager.py         # Model lifecycle management and caching
 ├── utils/                       # Supporting utilities and helpers
 │   ├── audio_utils.py           # Comprehensive audio I/O and manipulation
 │   ├── config.py                # Configuration management and persistence
 │   └── web_utils.py             # Streamlit component helpers and UI utilities
+├── voice_profiles/              # Pre-configured voice profile definitions
+│   ├── README.md                # Voice profiles documentation and guide
+│   ├── delhi_emperor.json       # The Delhi Emperor profile configuration
+│   └── *.json                   # Additional custom voice profiles
 ├── models/                      # AI model storage and version management
 │   ├── embedding_models/        # Speaker embedding extraction models
 │   │   ├── wav2vec2/           # Wav2Vec2 model components
