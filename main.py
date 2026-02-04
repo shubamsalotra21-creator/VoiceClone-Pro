@@ -350,13 +350,6 @@ def generate_speech(text, emotion, emotion_strength, speed, pitch, denoise, norm
         status_text.text("✅ Speech generation complete!")
         
         st.audio(output_path, format="audio/wav")
-        
-        st.session_state.generated_audio.append((output_path, text, emotion))
-        
-        progress_bar.progress(100)
-        status_text.text("✅ Speech generation complete!")
-        
-        st.audio(output_path, format="audio/wav")
         st.success("🎉 Speech generated successfully!")
         
     except Exception as e:

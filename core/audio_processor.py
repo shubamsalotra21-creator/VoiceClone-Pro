@@ -5,6 +5,7 @@ import librosa
 import noisereduce as nr
 from scipy import signal
 from typing import Union, List, Dict, Any
+import re
 
 class AudioProcessor:
     def __init__(self, target_sr: int = 22050):
@@ -261,7 +262,6 @@ class AudioProcessor:
             # Extract gain value if present (e.g., "+4dB")
             gain_db = 4.0  # default
             if "dB" in eq_boost:
-                import re
                 match = re.search(r'([+-]?\d+(?:\.\d+)?)\s*dB', eq_boost)
                 if match:
                     gain_db = float(match.group(1))
@@ -274,7 +274,6 @@ class AudioProcessor:
             # Extract ratio if present (e.g., "4:1 ratio")
             ratio = 4.0  # default
             if ":" in compression:
-                import re
                 match = re.search(r'(\d+(?:\.\d+)?):1', compression)
                 if match:
                     ratio = float(match.group(1))
@@ -287,7 +286,6 @@ class AudioProcessor:
             # Extract decay time if present (e.g., "0.4s decay")
             decay_time = 0.4  # default
             if "s" in reverb:
-                import re
                 match = re.search(r'(\d+(?:\.\d+)?)\s*s', reverb)
                 if match:
                     decay_time = float(match.group(1))
