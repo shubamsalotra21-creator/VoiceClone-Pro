@@ -75,7 +75,21 @@ class VoiceCloner:
         self.voice_models[voice_id] = voice_model
         return voice_model
     
-    def synthesize_speech(self, text: str, voice_model: Dict[str, Any]) -> np.ndarray:
+    def synthesize_speech(self, text: str, voice_model: Dict[str, Any], 
+                         stability: float = 0.5, clarity_similarity: float = 0.75,
+                         style_exaggeration: float = 0.0) -> np.ndarray:
+        """Synthesize speech with voice profile parameters.
+        
+        Args:
+            text: Text to synthesize
+            voice_model: Voice model dictionary
+            stability: Stability parameter (0.0-1.0), lower = more variable/expressive
+            clarity_similarity: Clarity/similarity parameter (0.0-1.0), higher = closer to original
+            style_exaggeration: Style exaggeration parameter (0.0-1.0), higher = more exaggerated
+            
+        Returns:
+            Synthesized audio as numpy array
+        """
         self.load_models()
         
         try:
@@ -83,9 +97,25 @@ class VoiceCloner:
                 [text]
             )
             
+            # Apply stability by adding controlled noise to mel spectrogram
+            if stability < 1.0:
+                noise_scale = (1.0 - stability) * 0.1
+                noise = torch.randn_like(mel_output) * noise_scale
+                mel_output = mel_output + noise
+            
+            # Apply style exaggeration by amplifying mel spectrogram variations
+            if style_exaggeration > 0.0:
+                mel_mean = mel_output.mean()
+                mel_output = mel_mean + (mel_output - mel_mean) * (1.0 + style_exaggeration)
+            
             waveforms = self.waveglow.decode_batch(mel_output)
             
             audio = waveforms.squeeze().cpu().numpy()
+            
+            # Apply clarity/similarity by blending with a more neutral version
+            if clarity_similarity < 1.0:
+                # This is a simplified approach - in production, you'd blend with reference
+                audio = audio * clarity_similarity + audio * 0.5 * (1.0 - clarity_similarity)
             
             return audio
             

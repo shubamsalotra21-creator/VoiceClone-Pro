@@ -1,0 +1,37 @@
+{
+  "voice_profile": {
+    "character_name": "The Delhi Emperor",
+    "age_range": "30-40 years",
+    "gender": "Male",
+    "ethnicity": "Indian",
+    "accent": "Authentic Delhi (Urban/Strong)",
+    "archetype": "Alpha / Anti-Hero / Commanding Leader",
+    "vocal_texture": {
+      "depth": "Extreme bass / Sub-frequency resonance (85Hz-110Hz)",
+      "timbre": "Rich, husky, heavy chest-weighted",
+      "weight": "Cinematic (Thanos-level authority)",
+      "finish": "Slightly gritty, warm, intimidatingly attractive"
+    }
+  },
+  "performance_attributes": {
+    "pacing": "Slow-moderate cinematic",
+    "pauses": "Strategic, dramatic, weighted",
+    "breathing": "Audible, controlled, close-mic proximity",
+    "emotional_range": "100% (Rage, dominance, vulnerability, sarcasm, triumph)",
+    "language_nuance": "Pure Hindi with natural Delhi rhythm and colloquial 'Dilli' bite"
+  },
+  "technical_engine_parameters": {
+    "stability": 0.45,
+    "clarity_similarity": 0.90,
+    "style_exaggeration": 0.15,
+    "post_processing": {
+      "eq_boost": "60Hz-150Hz (+4dB) for sub-bass weight",
+      "compression": "4:1 ratio for intimate 'whisper-to-roar' presence",
+      "reverb": "Small Dark Room / Plate (0.4s decay)"
+    }
+  },
+  "masterpiece_script_segment": {
+    "hindi": "Dilli ki hawa mein na... ek ajeeb sa bhari-pan hai. Log kehte hain ye dhuaan hai. Main kehta hoon... ye un logon ki cheekhein hain jo mere raaste mein aaye thhe. Beta... raj-paat virasat mein milta hoga, lekin dabdaba... dabdaba kamana padta hai.",
+    "performance_directive": "Start with a deep intake of breath. Speak close to the mic. Treat words like 'DABDABA' with heavy chest resonance. End with a slow, commanding finality."
+  }
+}
