@@ -2,6 +2,25 @@
 
 <p><strong>VoiceClone Pro</strong> represents a paradigm shift in voice artificial intelligence by implementing state-of-the-art neural voice cloning capabilities that can replicate any voice with unprecedented accuracy using minimal reference audio. This enterprise-grade platform combines advanced speaker embedding extraction, emotional prosody modeling, and real-time speech synthesis to create a comprehensive voice cloning ecosystem suitable for professional applications across entertainment, accessibility, and enterprise communication domains.</p>
 
+<h2>🚀 Quick Start — How to Preview / Run the App</h2>
+
+<pre><code># 1. Clone the repository
+git clone https://github.com/shubamsalotra21-creator/VoiceClone-Pro.git
+cd VoiceClone-Pro
+
+# 2. Create and activate a virtual environment
+python -m venv voiceclone_env
+source voiceclone_env/bin/activate  # Windows: voiceclone_env\Scripts\activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Launch the app
+streamlit run main.py
+</code></pre>
+
+<p>After running the last command, open <strong>http://localhost:8501</strong> in your browser to preview the app.</p>
+
 <h2>Overview</h2>
 <p>Traditional voice synthesis systems suffer from significant limitations: they require extensive training data, lack emotional expressiveness, and cannot adapt to new speakers without complete retraining. VoiceClone Pro revolutionizes this landscape by implementing few-shot voice cloning capabilities that extract speaker characteristics from as little as 30 seconds of reference audio while maintaining full control over emotional expression and speech characteristics. The platform bridges the gap between human vocal expression and synthetic speech generation through sophisticated neural architectures that preserve speaker identity while enabling dynamic emotional modulation.</p>
 
