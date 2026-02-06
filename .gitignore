@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+voiceclone_env/
+venv/
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Models and outputs (large files)
+models/
+outputs/
+cache/
+logs/
+backups/
+temp/
+
+# Temp files
+temp_processed.wav
+*.tmp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Config generated at runtime
+config.yaml
